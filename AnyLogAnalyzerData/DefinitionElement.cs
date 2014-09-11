@@ -13,14 +13,23 @@ namespace Mkko
         public bool IsRegex { get; set; }
         public Dictionary<string, string> Metadata { get; set; }
 
-        public bool hasPatternForMetadata(string key)
+        public List<string> GetMetadataKeys()
         {
-            return Metadata.ContainsKey(key);
+            if (this.Metadata != null)
+            {
+                return this.Metadata.Keys.ToList<String>();
+            }
+            return new List<string>();
         }
 
         public bool getMetadataPattern(string key, out string value)
         {
-            return this.Metadata.TryGetValue(key, out value);
+            if (this.Metadata != null)
+            {
+                return this.Metadata.TryGetValue(key, out value); 
+            }
+            value = "";
+            return false;
         }
 
         public override string ToString()

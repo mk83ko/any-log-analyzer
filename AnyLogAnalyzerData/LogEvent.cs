@@ -8,20 +8,22 @@ namespace Mkko.AnyLogAnalyzerData
 {
     public class LogEvent : IComparable<LogEvent>
     {
+        public DateTime timestamp { get; set; }
+
         private string eventCategory;
         private string eventId;
         private LogElement logElement;
-        private IDictionary<String, String> metadata;
+        private IDictionary<String, List<string>> metadata;
 
         public LogEvent(string category, LogElement element){
 
             this.eventCategory = category;
             this.logElement = element;
-            this.metadata = new Dictionary<String, String>();
+            this.metadata = new Dictionary<String, List<string>>();
             this.setId();
         }
 
-        public void AddMetadata(string key, string value)
+        public void AddMetadata(string key, List<string> value)
         {
             if (key != null) { this.metadata.Add(key, value); }
         }
@@ -44,7 +46,18 @@ namespace Mkko.AnyLogAnalyzerData
 
         public override string ToString()
         {
-            return "[" + this.eventCategory + " at line number " + this.logElement.LineNumber + ": " + this.logElement.LogMessage + "]";
+            string output = this.timestamp.ToString() + "> " + this.eventCategory + " at line number " + this.logElement.LineNumber + ":\r\n";
+            foreach (string key in this.metadata.Keys)
+            {
+                output += "\t" + key + ": ";
+                List<string> values = new List<String>();
+                this.metadata.TryGetValue(key, out values);
+                foreach (string value in values)
+                {
+                    output += value + ", ";
+                }
+            }
+            return output;
         }
 
         private void setId()

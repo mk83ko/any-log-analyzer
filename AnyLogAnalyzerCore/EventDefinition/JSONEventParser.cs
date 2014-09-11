@@ -4,6 +4,7 @@ using Newtonsoft.Json;
 
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -40,8 +41,7 @@ namespace Mkko.AnyLogAnalyzerCore
                     List<string> matches = new List<string>();
                     if (StringHelper.TryGetMatch(element.LogMessage, regex, out matches))
                     {
-                        LogEvent logEvent = new LogEvent(def.Category, element);
-                        events.Add(logEvent);
+                        events.Add(this.CreateEvent(def, this.definitionProvider.Timestamp, element));
                         match = true;
                         break;
                     }
@@ -70,15 +70,30 @@ namespace Mkko.AnyLogAnalyzerCore
             catch (JsonReaderException jex) { throw jex; }
         }
 
-        private bool hasMatch(bool isRegex, string pattern, string line)
+        private LogEvent CreateEvent(DefinitionElement definition, Timestamp timestamp, LogElement element)
         {
-
-            if (isRegex)
+            LogEvent logEvent = new LogEvent(definition.Category, element);
+            foreach (string key in definition.GetMetadataKeys())
             {
-                Regex regex = new Regex(pattern);
-                return regex.IsMatch(line);
+                string regex = "";
+                if (definition.Metadata.TryGetValue(key, out regex))
+                {
+                    List<string> matches = new List<string>();
+                    if (StringHelper.TryGetMatch(element.LogMessage, regex, out matches)){
+                        logEvent.AddMetadata(key, matches);
+                    }
+                }
+                if (timestamp.Pattern != null && timestamp.Format != null)
+                {
+                    List<string> rawTimestamp = new List<string>();
+                    if (StringHelper.TryGetMatch(element.LogMessage, timestamp.Pattern, out rawTimestamp))
+                    {
+                        DateTime timestampObject = DateTime.ParseExact(rawTimestamp.ElementAt<string>(0), timestamp.Format, CultureInfo.InvariantCulture);
+                        logEvent.timestamp = timestampObject;
+                    }
+                }
             }
-            return line.Contains(pattern);
+            return logEvent;
         }
     }
 }
