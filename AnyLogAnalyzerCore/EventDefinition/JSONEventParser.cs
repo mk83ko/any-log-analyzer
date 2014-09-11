@@ -16,44 +16,38 @@ namespace Mkko.AnyLogAnalyzerCore
     {
         public string DefinitionFile { get; set; }
 
-        private List<DefinitionElement> definitions;
+        private DefinitionProvider definitionProvider;
 
         public JSONEventParser(string jsonUri)
         {
             this.DefinitionFile = jsonUri;
             this.initializeDefinitions();
+
+            foreach (DefinitionElement def in definitionProvider.Definitions)
+            {
+                Console.WriteLine(def.ToString());
+            }
         }
 
-        public bool HasMatch(LogElement logElement)
+        public bool GetEvent(LogElement element, out List<LogEvent> events)
         {
-            foreach (DefinitionElement definition in definitions)
+            events = new List<LogEvent>();
+            bool match = false;
+            foreach (DefinitionElement def in this.definitionProvider.Definitions)
             {
-                foreach (string pattern in definition.Patterns)
+                foreach (string regex in def.DetectionPatterns)
                 {
-                    string literalPattern = StringHelper.ToLiteral(pattern);
-                    if (this.hasMatch(definition.IsRegex, pattern, logElement.LogMessage))
+                    List<string> matches = new List<string>();
+                    if (StringHelper.TryGetMatch(element.LogMessage, regex, out matches))
                     {
-                        return true;
+                        LogEvent logEvent = new LogEvent(def.Category, element);
+                        events.Add(logEvent);
+                        match = true;
+                        break;
                     }
                 }
             }
-            return false;
-        }
-
-        public LogEvent GetEvent(LogElement logElement)
-        {
-            foreach (DefinitionElement definition in definitions)
-            {
-                foreach (string pattern in definition.Patterns)
-                {
-                    string literalPattern = StringHelper.ToLiteral(pattern);
-                    if (this.hasMatch(definition.IsRegex, pattern, logElement.LogMessage))
-                    {
-                        return new LogEvent(definition.Category, logElement);
-                    }
-                }
-            }
-            return null;
+            return match;
         }
 
         private void initializeDefinitions()
@@ -71,7 +65,7 @@ namespace Mkko.AnyLogAnalyzerCore
             {
                 FileInfo file = FilesystemIOHelper.getFileInfo(this.DefinitionFile);
                 string jsonAsString = file.OpenText().ReadToEnd();
-                this.definitions = JsonConvert.DeserializeObject<List<DefinitionElement>>(jsonAsString);
+                this.definitionProvider = JsonConvert.DeserializeObject<DefinitionProvider>(jsonAsString);
             }
             catch (JsonReaderException jex) { throw jex; }
         }

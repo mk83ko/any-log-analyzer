@@ -8,7 +8,7 @@ namespace Mkko
 {
     public class DefinitionElement
     {
-        public string[] Patterns { get; set; }
+        public string[] DetectionPatterns { get; set; }
         public string Category { get; set; }
         public bool IsRegex { get; set; }
         public Dictionary<string, string> Metadata { get; set; }
@@ -21,6 +21,15 @@ namespace Mkko
         public bool getMetadataPattern(string key, out string value)
         {
             return this.Metadata.TryGetValue(key, out value);
+        }
+
+        public override string ToString()
+        {
+            string output = Category + ": \r\n";
+            foreach (string pattern in DetectionPatterns){
+                output += "\t" + pattern + "\r\n";
+            }
+            return output;
         }
     }
 }

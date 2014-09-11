@@ -36,9 +36,13 @@ namespace Mkko.AnyLogAnalyzerCore
                 {
                     this.currentLine++;
                     LogElement element = new LogElement(line, this.currentLine);
-                    if (this.EventDefinition.HasMatch(element))
+                    List<LogEvent> events = new List<LogEvent>();
+
+                    if (this.EventDefinition.GetEvent(element, out events))
                     {
-                        yield return this.EventDefinition.GetEvent(element);
+                        foreach (LogEvent logEvent in events){
+                            yield return logEvent;
+                        }
                     }
                 }
             }

@@ -29,6 +29,7 @@ namespace Mkko.AnyLogAnalyzer
             {
                 Console.WriteLine(logEvent.ToString());
             }
+            Console.WriteLine("press enter to close the application");
             Console.ReadLine();
         }
     }

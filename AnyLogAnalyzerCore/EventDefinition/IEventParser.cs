@@ -11,7 +11,6 @@ namespace Mkko.AnyLogAnalyzerCore
 {
     public interface IEventParser
     {
-        bool HasMatch(LogElement logElement);
-        LogEvent GetEvent(LogElement logElement);
+        bool GetEvent(LogElement element, out List<LogEvent> events);
     }
 }

@@ -12,25 +12,19 @@ namespace Mkko.AnyLogAnalyzerCore
     {
         private string[] definitions = { "[[WORKER]]", "[[SUBTARGET]]", "[[PUBLICTARGET]]" };
 
-
-        public bool HasMatch(LogElement logElement)
+        public bool GetEvent(LogElement element, out List<LogEvent> events)
         {
-            foreach (string definition in definitions){
-                if (logElement.LogMessage.Contains(definition))
+            bool match = false;
+            events = new List<LogEvent>();
+            foreach (string definition in definitions)
+            {
+                if (element.LogMessage.Contains(definition))
                 {
-                    return true;
+                    match = true;
+                    events.Add(new LogEvent("mock-event", element));
                 }
             }
-            return false;
-        }
-
-        public LogEvent GetEvent(LogElement logElement)
-        {
-            if (!this.HasMatch(logElement))
-            {
-                return null;
-            }
-            return new LogEvent("mockevent", logElement);
+            return match;
         }
     }
 }

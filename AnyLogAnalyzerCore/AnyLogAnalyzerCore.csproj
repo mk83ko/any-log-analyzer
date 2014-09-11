@@ -43,8 +43,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="EventDefinition\EventMock.cs" />
-    <Compile Include="EventDefinition\IEventDefinition.cs" />
-    <Compile Include="EventDefinition\JSONEventDefinition.cs" />
+    <Compile Include="EventDefinition\IEventParser.cs" />
+    <Compile Include="EventDefinition\JSONEventParser.cs" />
     <Compile Include="FilesystemIOHelper.cs" />
     <Compile Include="LogFileReader\ILogFileReader.cs" />
     <Compile Include="LogFileReader\SimpleLogReader.cs" />
