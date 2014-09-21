@@ -18,5 +18,10 @@ namespace Mkko.AnyLogAnalyzerCore
         {
             return new FileInfo(uri);
         }
+
+        public static StreamWriter openFileForWriting(string uri)
+        {
+            return new StreamWriter(uri);
+        }
     }
 }

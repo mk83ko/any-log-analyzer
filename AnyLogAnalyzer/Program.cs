@@ -26,6 +26,11 @@ namespace Mkko.AnyLogAnalyzer
             }
             (new ConsolePrinter()).CreateReport(events);
 
+            HtmlReportGenerator generator = new HtmlReportGenerator();
+            generator.FileName = fileuri + ".html";
+            generator.LogFile = fileuri;
+            generator.CreateReport(events);
+
             Console.WriteLine("press enter to close the application");
             Console.ReadLine();
         }
