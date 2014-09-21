@@ -1,12 +1,15 @@
-﻿using System;
+﻿using Mkko.AnyLogAnalyzerData;
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Mkko
+namespace Mkko.AnyLogAnalyzerCore
 {
-    interface IReportGenerator
+    public interface IReportGenerator
     {
+        void CreateReport(SortedSet<LogEvent> events);
     }
 }

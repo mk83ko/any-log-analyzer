@@ -8,17 +8,17 @@ namespace Mkko.AnyLogAnalyzerData
 {
     public class LogEvent : IComparable<LogEvent>
     {
-        public DateTime timestamp { get; set; }
+        public DateTime Timestamp { get; set; }
+        public string Category { get; set; }
+        public string Id { get; set; }
+        public LogElement Element { get; set; }
 
-        private string eventCategory;
-        private string eventId;
-        private LogElement logElement;
         private IDictionary<String, List<string>> metadata;
 
         public LogEvent(string category, LogElement element){
 
-            this.eventCategory = category;
-            this.logElement = element;
+            this.Category = category;
+            this.Element = element;
             this.metadata = new Dictionary<String, List<string>>();
             this.setId();
         }
@@ -28,25 +28,44 @@ namespace Mkko.AnyLogAnalyzerData
             if (key != null) { this.metadata.Add(key, value); }
         }
 
+        public List<string> GetMetadataKeys()
+        {
+            if (this.metadata != null)
+            {
+                return this.metadata.Keys.ToList<String>();
+            }
+            return new List<string>();
+        }
+
+        public bool getMetadata(string key, out List<string> value)
+        {
+            if (this.metadata != null)
+            {
+                return this.metadata.TryGetValue(key, out value);
+            }
+            value = new List<string>();
+            return false;
+        }
+
         public int CompareTo(LogEvent other)
         {
-            if (!this.eventCategory.Equals(other.eventCategory))
+            if (!this.Category.Equals(other.Category))
             {
-                return this.eventCategory.CompareTo(other.eventCategory);
+                return this.Category.CompareTo(other.Category);
             }
             else
             {
-                if (!this.logElement.LogMessage.Equals(other.logElement.LogMessage))
+                if (!this.Element.LogMessage.Equals(other.Element.LogMessage))
                 {
-                    return this.logElement.LogMessage.CompareTo(other.logElement.LogMessage);
+                    return this.Element.LogMessage.CompareTo(other.Element.LogMessage);
                 }
             }
-            return this.logElement.LineNumber.CompareTo(other.logElement.LineNumber);
+            return this.Element.LineNumber.CompareTo(other.Element.LineNumber);
         }
 
         public override string ToString()
         {
-            string output = this.timestamp.ToString() + "> " + this.eventCategory + " at line number " + this.logElement.LineNumber + ":\r\n";
+            string output = this.Timestamp.ToString() + "> " + this.Category + " at line number " + this.Element.LineNumber + ":\r\n";
             foreach (string key in this.metadata.Keys)
             {
                 output += "\t" + key + ": ";
@@ -62,7 +81,7 @@ namespace Mkko.AnyLogAnalyzerData
 
         private void setId()
         {
-            this.eventId = this.logElement.LogMessage;
+            this.Id = this.Element.LogMessage;
         }
     }
 }

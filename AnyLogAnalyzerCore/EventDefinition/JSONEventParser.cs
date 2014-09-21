@@ -89,7 +89,7 @@ namespace Mkko.AnyLogAnalyzerCore
                     if (StringHelper.TryGetMatch(element.LogMessage, timestamp.Pattern, out rawTimestamp))
                     {
                         DateTime timestampObject = DateTime.ParseExact(rawTimestamp.ElementAt<string>(0), timestamp.Format, CultureInfo.InvariantCulture);
-                        logEvent.timestamp = timestampObject;
+                        logEvent.Timestamp = timestampObject;
                     }
                 }
             }

@@ -24,11 +24,8 @@ namespace Mkko.AnyLogAnalyzer
             {
                 events.Add(logEvent);
             }
+            (new ConsolePrinter()).CreateReport(events);
 
-            foreach (LogEvent logEvent in events)
-            {
-                Console.WriteLine(logEvent.ToString());
-            }
             Console.WriteLine("press enter to close the application");
             Console.ReadLine();
         }
