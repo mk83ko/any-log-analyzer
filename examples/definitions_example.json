@@ -1,0 +1,34 @@
+{
+    "Timestamp": {
+        "Pattern": "\\d{2}-\\D{3}-\\d{4} \\d{2}:\\d{2}:\\d{2}",
+        "Format": "dd-MMM-yyyy hh:mm:ss"
+    },
+    "Definitions": [ 
+        {
+        "Category": "public target",
+        "IsRegex": false,
+        "DetectionPatterns": [ "\\[{2}PUBLICTARGET\\]{2}" ]
+        },
+        {
+        "Category": "sub- or worker target",
+        "IsRegex": false,
+        "DetectionPatterns": [ 
+            "\\[{2}SUBTARGET\\]{2}", 
+            "\\[{2}WORKER\\]{2}" 
+            ]
+        },
+        {
+        "Category": "WiX warning",
+        "IsRegex": true,
+        "DetectionPatterns": [
+            "^.*LGHT\\d\\d\\d\\d.*$",
+            "^.*CNDL\\d\\d\\d\\d.*$"
+            ],
+        "Metadata": {
+            "warning ID": "\\D{4}\\d{4}",
+            "wix file": "\\\\\\S*\\.\\D{3}\\s\\(\\d\\)",
+            "text": "ICE\\d*:\\s.*[^\\[]"
+        }
+        }
+    ]
+}
