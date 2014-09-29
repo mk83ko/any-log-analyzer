@@ -1,0 +1,53 @@
+{
+    "Timestamp": {
+        "Pattern": "\\d{2}-\\D{3}-\\d{4} \\d{2}:\\d{2}:\\d{2}",
+        "Format": "dd-MMM-yyyy hh:mm:ss"
+    },
+    "Definitions": [ 
+        {
+        "Category": "Compiler warnings",
+        "IsRegex": true,
+        "DetectionPatterns": [ "^.*C\\d\\d\\d\\d.*$" ]
+        "Metadata": {
+            "warning ID": "C\\d{4}"
+            }
+        },
+        {
+        "Category": "Linker warnings",
+        "IsRegex": true,
+        "DetectionPatterns": [ "^.*LNK\\d\\d\\d\\d.*$" ]
+        "Metadata": {
+            "warning ID": "LNK\\d{4}"
+            }
+        },
+        {
+        "Category": "MSBuild warnings",
+        "IsRegex": true,
+        "DetectionPatterns": [ "^.*MSB\\d\\d\\d\\d.*$" ]
+        "Metadata": {
+            "warning ID": "MSB\\d{4}"
+            }
+        },
+        {
+        "Category": "MSTest deployment errors",
+        "IsRegex": true,
+        "DetectionPatterns": [ "^.*EXEC\\s:\\swarning\\s:" ]
+        "Metadata": {
+            "text": "warning\\s:\\s.*[^\\[]"
+            }
+        },
+        {
+        "Category": "WiX warning",
+        "IsRegex": true,
+        "DetectionPatterns": [
+            "^.*LGHT\\d\\d\\d\\d.*$",
+            "^.*CNDL\\d\\d\\d\\d.*$"
+            ],
+        "Metadata": {
+            "warning ID": "\\D{4}\\d{4}",
+            "wix file": "\\\\\\S*\\.\\D{3}\\s\\(\\d\\)",
+            "text": "ICE\\d*:\\s.*[^\\[]"
+            }
+        }
+    ]
+}
