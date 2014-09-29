@@ -7,7 +7,7 @@
         {
         "Category": "Compiler warnings",
         "IsRegex": true,
-        "DetectionPatterns": [ "^.*C\\d\\d\\d\\d.*$" ]
+        "DetectionPatterns": [ "^.*C\\d\\d\\d\\d.*$" ],
         "Metadata": {
             "warning ID": "C\\d{4}"
             }
@@ -15,7 +15,7 @@
         {
         "Category": "Linker warnings",
         "IsRegex": true,
-        "DetectionPatterns": [ "^.*LNK\\d\\d\\d\\d.*$" ]
+        "DetectionPatterns": [ "^.*LNK\\d\\d\\d\\d.*$" ],
         "Metadata": {
             "warning ID": "LNK\\d{4}"
             }
@@ -23,7 +23,7 @@
         {
         "Category": "MSBuild warnings",
         "IsRegex": true,
-        "DetectionPatterns": [ "^.*MSB\\d\\d\\d\\d.*$" ]
+        "DetectionPatterns": [ "^.*MSB\\d\\d\\d\\d.*$" ],
         "Metadata": {
             "warning ID": "MSB\\d{4}"
             }
@@ -31,7 +31,7 @@
         {
         "Category": "MSTest deployment errors",
         "IsRegex": true,
-        "DetectionPatterns": [ "^.*EXEC\\s:\\swarning\\s:" ]
+        "DetectionPatterns": [ "^.*EXEC\\s:\\swarning\\s:" ],
         "Metadata": {
             "text": "warning\\s:\\s.*[^\\[]"
             }
