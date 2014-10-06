@@ -10,7 +10,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("mkko.org")]
 [assembly: AssemblyProduct("AnyLogAnalyzer")]
-[assembly: AssemblyCopyright("Copyright ©mkko.org  2014")]
+[assembly: AssemblyCopyright("Copyright © 2014 mkko.org")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
