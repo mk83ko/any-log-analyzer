@@ -18,6 +18,11 @@ namespace Mkko.AnyLogAnalyzerCore
 
         private HtmlTextWriter htmlWriter;
 
+        public HtmlReportGenerator(string output)
+        {
+            this.FileName = output;
+        }
+
         public void CreateReport(SortedSet<LogEvent> events)
         {
             StreamWriter streamWriter = FilesystemIOHelper.openFileForWriting(this.FileName);

@@ -1,4 +1,6 @@
-﻿using Mkko.AnyLogAnalyzerCore;
+﻿using CommandLine;
+
+using Mkko.AnyLogAnalyzerCore;
 using Mkko.AnyLogAnalyzerData;
 
 using System;
@@ -11,67 +13,73 @@ namespace Mkko.AnyLogAnalyzer
 {
     class CommandLineInterface
     {
-        private string[] parameters = { "logfile", "definitions", "output" };
         private ILogFileReader reader = null;
         private IReportGenerator generator = null;
 
-        static void Main(string[] args)
+        static int Main(string[] args)
         {
-            if (args.Length == 0 || args.Length % 2 != 0)
-            {
-                printUsage();
-            }
-            else 
-            { 
+            CliArguments arguments = new CliArguments();
+            if (Parser.Default.ParseArguments(args, arguments)){
+                
                 CommandLineInterface cli = new CommandLineInterface();
-                cli.initialize();
+                cli.initialize(arguments);
+                SortedSet<LogEvent> events = cli.getEvents();
+                cli.generator.CreateReport(events);
+
+                if (arguments.NumberOfEventsAsReturnCode)
+                {
+                    return events.Count;
+                }
+                return 0;
             }
+            printUsage();
+            return 1;
         }
 
-        private void initialize()
+        private void initialize(CliArguments arguments)
         {
-            Dictionary<string, string> arguments = this.getCommandLineArguments();
             try
             {
-                string logfile = "";  
-                string defFile = "";
-                string report = "";
-                arguments.TryGetValue("logfile", out logfile);
-                arguments.TryGetValue("definitions", out defFile);
-                arguments.TryGetValue("output", out report);
+                IEventParser definitions = new JSONEventParser(arguments.Definitions);
 
-                reader = new SimpleLogReader(logfile);
-                reader.EventDefinition = new JSONEventParser(defFile);
+                reader = new SimpleLogReader(arguments.Logfile);
+                reader.EventDefinition = definitions;
 
-                SortedSet<LogEvent> events = new SortedSet<LogEvent>();
-
-                foreach (LogEvent logEvent in reader.getEventIterator())
+                switch (arguments.Format)
                 {
-                    events.Add(logEvent);
+                    case "stdout":
+                        generator = new ConsolePrinter();
+                        break;
+                    case "html":
+                        generator = this.getHtmlReportGenerator(arguments);
+                        break;
+                    default:
+                        generator = new ConsolePrinter();
+                        break;
                 }
-
-                HtmlReportGenerator generator = new HtmlReportGenerator();
-                generator.FileName = report;
-                generator.LogFile = logfile;
-                generator.CreateReport(events);
             }
-            catch (Exception e)
+            catch(Exception ex)
             {
-                Console.WriteLine(e.Message);
-                CommandLineInterface.printUsage();
+                Console.Write(ex.Message);
             }
         }
 
-        private Dictionary<string, string> getCommandLineArguments()
-        {
-            Dictionary<string, string> arguments = new Dictionary<string, string>();
+        private HtmlReportGenerator getHtmlReportGenerator(CliArguments arguments){
+            
+            HtmlReportGenerator generator = new HtmlReportGenerator(arguments.Output);
+            generator.LogFile = arguments.Logfile;
+            return generator;
+        }
 
-            string[] args = Environment.GetCommandLineArgs();
-            for (int i = 1; i < args.Length; i = i + 2)
+        private SortedSet<LogEvent> getEvents()
+        {
+            SortedSet<LogEvent> events = new SortedSet<LogEvent>();
+            foreach (LogEvent logEvent in reader.getEventIterator())
             {
-                arguments.Add(args[i], args[i + 1]);
+                events.Add(logEvent);
             }
-            return arguments;
+
+            return events;
         }
 
         private static void printUsage()

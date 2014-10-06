@@ -26,8 +26,7 @@ namespace Mkko.AnyLogAnalyzer
             }
             (new ConsolePrinter()).CreateReport(events);
 
-            HtmlReportGenerator generator = new HtmlReportGenerator();
-            generator.FileName = fileuri + ".html";
+            HtmlReportGenerator generator = new HtmlReportGenerator(fileuri + ".html");
             generator.LogFile = fileuri;
             generator.CreateReport(events);
 
