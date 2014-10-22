@@ -1,0 +1,13 @@
+{
+    "Definitions": [ 
+        {
+        "Category": "JBoss",
+        "IsRegex": true,
+        "DetectionPatterns": [ "^.*\\sDEBUG\\s" ],
+        "Metadata": {
+            "class": "\\[.*\\]",
+            "timestamp": "\\D\\D:\\D\\D:\\D\\D"
+            }
+        }
+    ]
+}

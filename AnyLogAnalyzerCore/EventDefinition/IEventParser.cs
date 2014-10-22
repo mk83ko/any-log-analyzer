@@ -1,13 +1,6 @@
-﻿using Mkko.AnyLogAnalyzerData;
+﻿using System.Collections.Generic;
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-
-namespace Mkko.AnyLogAnalyzerCore
+namespace Mkko.EventDefinition
 {
     /// <summary>
     /// provides functionality to transform a single element in a log file into a log event

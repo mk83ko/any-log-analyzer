@@ -1,29 +1,29 @@
-﻿using Mkko.AnyLogAnalyzerData;
-
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace Mkko.AnyLogAnalyzerCore
+namespace Mkko.ReportGenerator
 {
+    /// <summary>
+    /// This implementation of <see cref="IReportGenerator"/> prints all events to the console./>
+    /// </summary>
     public class ConsolePrinter : IReportGenerator
     {
+        /// <summary>
+        /// Prints the supplied <c>LogEvent</c>s to console.
+        /// </summary>
+        /// <param name="events"><see cref="SortedSet{T}"/> of <see cref="LogEvent"/>s.</param>
         public void CreateReport(SortedSet<LogEvent> events)
         {
-            foreach (LogEvent logEvent in events)
+            foreach (var logEvent in events)
             {
-                string output = logEvent.Category + " (" + logEvent.Timestamp.ToString() + ", line " + logEvent.Element.LineNumber + "):\r\n";
-                foreach (string key in logEvent.GetMetadataKeys())
+                var output = logEvent.Category + " (" + logEvent.Timestamp + ", line " + logEvent.Element.LineNumber + "):\r\n";
+                foreach (var key in logEvent.GetMetadataKeys())
                 {
                     output += "\t*" + key + ": ";
-                    List<string> values = new List<string>();
-                    logEvent.getMetadata(key, out values);
-                    foreach (string value in values)
-                    {
-                        output += value + ",";
-                    }
+                    List<string> values;
+                    logEvent.GetMetadata(key, out values);
+                    output = values.Aggregate(output, (current, value) => current + (value + ","));
                     output = output.Substring(0, output.Length - 2) + "\r\n";
                 }
 

@@ -1,12 +1,7 @@
-﻿using Mkko.AnyLogAnalyzerData;
+﻿using System.Collections.Generic;
+using Mkko.EventDefinition;
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Mkko.AnyLogAnalyzerCore
+namespace Mkko.LogFileReader
 {
     /// <summary>
     /// this interfaces is used to fetch defined events from a log file
@@ -14,11 +9,14 @@ namespace Mkko.AnyLogAnalyzerCore
     public interface ILogFileReader 
     {
         /// <summary>
-        /// returns an iterator for definied events found in the specified log file
+        /// returns an iterator for defined events found in the specified log file
         /// </summary>
         /// <returns>iterator containing <c>LogEvent</c> elements</returns>
-        IEnumerable<LogEvent> getEventIterator();
+        IEnumerable<LogEvent> GetEventIterator();
 
+        /// <summary>
+        /// URI of logfile to be analyzed.
+        /// </summary>
         string Logfile { get; set; }
 
         /// <summary>

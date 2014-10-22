@@ -44,7 +44,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="EventDefinition\EventMock.cs" />
+    <Compile Include="BadConfigurationException.cs" />
     <Compile Include="EventDefinition\IEventParser.cs" />
     <Compile Include="EventDefinition\JSONEventParser.cs" />
     <Compile Include="FilesystemIOHelper.cs" />

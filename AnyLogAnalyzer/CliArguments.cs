@@ -1,23 +1,16 @@
 ﻿using CommandLine;
-using CommandLine.Text;
-
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Mkko
 {
     class CliArguments
     {
-        [Option('l', "logifle", Required = true, HelpText = "log file to read.")]
+        [Option('l', "log file", Required = true, HelpText = "log file to read.")]
         public string Logfile { get; set; }
 
         [Option('d', "definitions", Required = true, HelpText = "file containing the event definitions.")]
         public string Definitions { get; set; }
 
-        [Option('f', "format", DefaultValue = "text", Required = false, HelpText = "output format for the results (text or html). deafult format is text")]
+        [Option('f', "format", DefaultValue = "text", Required = false, HelpText = "output format for the results (text or html). default format is text")]
         public string Format { get; set; }
 
         [Option('o', "output", DefaultValue = "stdout", Required = false, HelpText = "destination for output (stdout or file). default is stdout.")]

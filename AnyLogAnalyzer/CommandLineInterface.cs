@@ -1,20 +1,18 @@
-﻿using CommandLine;
-
-using Mkko.AnyLogAnalyzerCore;
-using Mkko.AnyLogAnalyzerData;
-
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.IO;
+using CommandLine;
+using Mkko.EventDefinition;
+using Mkko.LogFileReader;
+using Mkko.ReportGenerator;
+using Newtonsoft.Json;
 
-namespace Mkko.AnyLogAnalyzer
+namespace Mkko
 {
     class CommandLineInterface
     {
-        private ILogFileReader reader = null;
-        private IReportGenerator generator = null;
+        private ILogFileReader reader;
+        private IReportGenerator generator;
 
         static int Main(string[] args)
         {
@@ -22,25 +20,37 @@ namespace Mkko.AnyLogAnalyzer
             if (Parser.Default.ParseArguments(args, arguments)){
                 
                 CommandLineInterface cli = new CommandLineInterface();
-                cli.initialize(arguments);
-                SortedSet<LogEvent> events = cli.getEvents();
-                cli.generator.CreateReport(events);
 
-                if (arguments.NumberOfEventsAsReturnCode)
+                try
                 {
-                    return events.Count;
+                    cli.Initialize(arguments);
+                    SortedSet<LogEvent> events = cli.GetEvents();
+                    cli.generator.CreateReport(events);
+
+                    if (arguments.NumberOfEventsAsReturnCode)
+                    {
+                        return events.Count;
+                    }
+                    return 0;
                 }
-                return 0;
+                catch (FileNotFoundException fnf)
+                {
+                    Console.WriteLine(fnf.Message);
+                }
+                catch (JsonReaderException jre)
+                {
+                    Console.WriteLine(jre.Message);
+                }
             }
-            printUsage();
+            PrintUsage();
             return 1;
         }
 
-        private void initialize(CliArguments arguments)
+        private void Initialize(CliArguments arguments)
         {
             try
             {
-                IEventParser definitions = new JSONEventParser(arguments.Definitions);
+                IEventParser definitions = new JsonEventParser(arguments.Definitions);
 
                 reader = new SimpleLogReader(arguments.Logfile);
                 reader.EventDefinition = definitions;
@@ -51,7 +61,7 @@ namespace Mkko.AnyLogAnalyzer
                         generator = new ConsolePrinter();
                         break;
                     case "html":
-                        generator = this.getHtmlReportGenerator(arguments);
+                        this.InitializeHtmlReportGenerator(arguments);
                         break;
                     default:
                         generator = new ConsolePrinter();
@@ -64,17 +74,15 @@ namespace Mkko.AnyLogAnalyzer
             }
         }
 
-        private HtmlReportGenerator getHtmlReportGenerator(CliArguments arguments){
+        private void InitializeHtmlReportGenerator(CliArguments arguments){
             
-            HtmlReportGenerator generator = new HtmlReportGenerator(arguments.Output);
-            generator.LogFile = arguments.Logfile;
-            return generator;
+            generator = new HtmlReportGenerator(arguments.Output) { LogFile = arguments.Logfile };
         }
 
-        private SortedSet<LogEvent> getEvents()
+        private SortedSet<LogEvent> GetEvents()
         {
             SortedSet<LogEvent> events = new SortedSet<LogEvent>();
-            foreach (LogEvent logEvent in reader.getEventIterator())
+            foreach (LogEvent logEvent in reader.GetEventIterator())
             {
                 events.Add(logEvent);
             }
@@ -82,7 +90,7 @@ namespace Mkko.AnyLogAnalyzer
             return events;
         }
 
-        private static void printUsage()
+        private static void PrintUsage()
         {
             Console.WriteLine("print usage here");
         }

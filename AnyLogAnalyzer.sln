@@ -16,6 +16,13 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AnyLogAnalyzerCore", "AnyLo
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AnyLogAnalyzerData", "AnyLogAnalyzerData\AnyLogAnalyzerData.csproj", "{52B527FF-2BE0-41B4-A07F-6BBA91671275}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AnyLogAnalyzerTests", "AnyLogAnalyzerTests\AnyLogAnalyzerTests.csproj", "{E72E59A7-7C97-47FA-AB85-86C546159B26}"
+	ProjectSection(ProjectDependencies) = postProject
+		{026F3B90-642E-4C33-B783-D15296488D35} = {026F3B90-642E-4C33-B783-D15296488D35}
+		{A8F7CAE3-13D1-4CDB-AADC-C46C74562DDC} = {A8F7CAE3-13D1-4CDB-AADC-C46C74562DDC}
+		{52B527FF-2BE0-41B4-A07F-6BBA91671275} = {52B527FF-2BE0-41B4-A07F-6BBA91671275}
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -34,6 +41,10 @@ Global
 		{52B527FF-2BE0-41B4-A07F-6BBA91671275}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{52B527FF-2BE0-41B4-A07F-6BBA91671275}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{52B527FF-2BE0-41B4-A07F-6BBA91671275}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E72E59A7-7C97-47FA-AB85-86C546159B26}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E72E59A7-7C97-47FA-AB85-86C546159B26}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E72E59A7-7C97-47FA-AB85-86C546159B26}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E72E59A7-7C97-47FA-AB85-86C546159B26}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

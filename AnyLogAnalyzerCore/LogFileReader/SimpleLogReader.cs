@@ -1,67 +1,91 @@
-﻿using Mkko.AnyLogAnalyzerData;
-
-using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Mkko.EventDefinition;
 
-namespace Mkko.AnyLogAnalyzerCore
+namespace Mkko.LogFileReader
 {
+    /// <summary>
+    /// This class is an implementation of the <c>ILogFileReader</c> interface. It reads a logfile line by line.
+    /// </summary>
     public class SimpleLogReader : ILogFileReader
     {
+        /// <summary>
+        /// The file URI of the logfile to be parsed.
+        /// </summary>
         public string Logfile{ get; set; }
+        /// <summary>
+        /// An implementation of <c>IEventParser</c> that holds the appropriate even definitions./>.
+        /// </summary>
         public IEventParser EventDefinition { get; set; }
 
         private StreamReader streamreader;
-        private int currentLine = 0;
+        private int currentLine;
 
+        /// <summary>
+        /// Constructor used to initialize a <code>SimpleLogReader</code> object.
+        /// </summary>
+        /// <param name="logfile"></param>
         public SimpleLogReader(string logfile)
         {
             this.Logfile = logfile;
         }
 
-        public IEnumerable<LogEvent> getEventIterator()
+        /// <summary>
+        /// Iterates over the <c>Logfile</c> and returns each line that is a log event in respect to the specified definitions in <cref name="EventDefinition"/>.
+        /// </summary>
+        /// <returns>An iterator for log events.</returns>
+        public IEnumerable<LogEvent> GetEventIterator()
         {
             if (this.streamreader == null)
-            {
-                this.initializeFileSteam();
-            }
+                this.InitializeFileSteam();
 
             using (this.streamreader)
             {
-                string line = null;
+                string line;
                 while ((line = this.streamreader.ReadLine()) != null)
                 {
                     this.currentLine++;
-                    LogElement element = new LogElement(line, this.currentLine);
-                    List<LogEvent> events = new List<LogEvent>();
+                    var element = new LogElement(line, this.currentLine);
+                    List<LogEvent> events;
 
                     if (this.EventDefinition.GetEvent(element, out events))
                     {
-                        foreach (LogEvent logEvent in events){
+                        foreach (var logEvent in events){
                             yield return logEvent;
                         }
                     }
                 }
             }
-            this.closeFileStream();
+            this.CloseFileStream();
         }
 
-        private void initializeFileSteam()
+        private void InitializeFileSteam()
         {
-            if (this.Logfile == null || !FilesystemIOHelper.fileExists(this.Logfile))
-            {
-                throw new FileNotFoundException("file not found or no URI specified", this.Logfile);
-            }
+            this.CheckConfigurationIsValid();
 
-            this.streamreader = (FilesystemIOHelper.getFileInfo(this.Logfile)).OpenText();
+            if (!FilesystemIoHelper.FileExists(this.Logfile))
+            {
+                string message = "The specified logfile " + this.Logfile + " was not found";
+                throw new BadConfigurationException(message);
+            }
+            this.streamreader = (FilesystemIoHelper.GetFileInfo(this.Logfile)).OpenText();
         }
 
-        private void closeFileStream()
+        private void CloseFileStream()
         {
             this.streamreader.Dispose();
+        }
+
+        private void CheckConfigurationIsValid()
+        {
+            if (this.Logfile == null)
+            {
+                throw new BadConfigurationException("Logfile", "null");
+            }
+            if (this.EventDefinition == null)
+            {
+                throw new BadConfigurationException("EventDefinition", "null");
+            }
         }
     }
 }

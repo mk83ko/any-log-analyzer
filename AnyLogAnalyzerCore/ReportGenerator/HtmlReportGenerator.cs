@@ -1,74 +1,84 @@
-﻿using Mkko.AnyLogAnalyzerData;
-
-using System;
-using System.Collections.Generic;
-using System.IO;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Web.UI;
 
-
-namespace Mkko.AnyLogAnalyzerCore
+namespace Mkko.ReportGenerator
 {
+    /// <summary>
+    /// This implementation of <see cref="IReportGenerator"/> creates a HTML report./>
+    /// </summary>
     public class HtmlReportGenerator : IReportGenerator
     {
+        /// <summary>
+        /// This property holds the URI to the output file.
+        /// </summary>
         public string FileName { get; set; }
+        /// <summary>
+        /// This property holds the URI to the analyzed logfile.
+        /// </summary>
         public string LogFile { get; set; }
 
         private HtmlTextWriter htmlWriter;
 
+        /// <summary>
+        /// Constructor to be used to initialize a <c>HtmlReportGenerator</c> object.
+        /// </summary>
+        /// <param name="output">This string holds the URI for the output report file.</param>
         public HtmlReportGenerator(string output)
         {
             this.FileName = output;
         }
 
+        /// <summary>
+        /// Creates a HTML report for a given set of <paramref name="events"/>.
+        /// </summary>
+        /// <param name="events"><see cref="SortedSet{T}"/> of <see cref="LogEvent"/>s found in a logfile.</param>
         public void CreateReport(SortedSet<LogEvent> events)
         {
-            StreamWriter streamWriter = FilesystemIOHelper.openFileForWriting(this.FileName);
+            var streamWriter = FilesystemIoHelper.OpenFileForWriting(this.FileName);
             htmlWriter = new HtmlTextWriter(streamWriter);
 
-            this.writeHead();
+            this.WriteHead();
 
-            this.writeBeginTag("table", " border=1 width=100%");
-            this.writeTableHeader();
+            this.WriteBeginTag("table", " border=1 width=100%");
+            this.WriteTableHeader();
 
             foreach (LogEvent logEvent in events)
             {
-                this.writeTableRow(logEvent);
+                this.WriteTableRow(logEvent);
             }
 
             htmlWriter.WriteEndTag("table");
         }
 
-        private void writeHead()
+        private void WriteHead()
         {
             string title = "analysis of log file " + this.LogFile;
 
-            this.writeBeginTag("title");
+            this.WriteBeginTag("title");
             htmlWriter.Write(title);
-            this.writeEndTag("title");
+            this.WriteEndTag("title");
 
-            this.writeBeginTag("h1");
+            this.WriteBeginTag("h1");
             htmlWriter.Write(title);
-            this.writeEndTag("h1");
+            this.WriteEndTag("h1");
         }
 
-        private void writeTableHeader()
+        private void WriteTableHeader()
         {
             string[] headers = { "category", "timestamp", "linenumber", "metadata", "element" };
             
-            this.writeBeginTag("tr");
+            this.WriteBeginTag("tr");
             foreach (string head in headers)
             {
-                this.writeBeginTag("td");
+                this.WriteBeginTag("td");
                 htmlWriter.Write(head);
-                this.writeEndTag("td");
+                this.WriteEndTag("td");
             }
-            this.writeEndTag("tr");
+            this.WriteEndTag("tr");
         }
 
-        private void writeTableRow(LogEvent logEvent)
+        private void WriteTableRow(LogEvent logEvent)
         {
             List<string> metadataKeys = logEvent.GetMetadataKeys();
             string rowspan = "";
@@ -77,71 +87,71 @@ namespace Mkko.AnyLogAnalyzerCore
                 rowspan = " rowspan=" + metadataKeys.Count;
             }
 
-            this.writeBeginTag("tr");
+            this.WriteBeginTag("tr");
 
-            this.writeBeginTag("td", rowspan);
+            this.WriteBeginTag("td", rowspan);
             htmlWriter.Write(logEvent.Category);
-            this.writeEndTag("td");
+            this.WriteEndTag("td");
 
-            this.writeBeginTag("td", rowspan);
+            this.WriteBeginTag("td", rowspan);
             htmlWriter.Write(logEvent.Timestamp);
-            this.writeEndTag("td");
+            this.WriteEndTag("td");
 
-            this.writeBeginTag("td", rowspan);
+            this.WriteBeginTag("td", rowspan);
             htmlWriter.Write(logEvent.Element.LineNumber);
-            this.writeEndTag("td");
+            this.WriteEndTag("td");
 
-            this.writeBeginTag("td");
+            this.WriteBeginTag("td");
             if (metadataKeys.Count > 0)
             {
-                string key = metadataKeys.ElementAt<string>(0);
+                string key = metadataKeys.ElementAt(0);
                 string value = "";
-                List<string> values = new List<string>();
-                logEvent.getMetadata(key, out values);
+                List<string> values;
+                logEvent.GetMetadata(key, out values);
                 foreach (string metadata in values)
                 {
                     value += "<br>" + metadata;
                 }
                 htmlWriter.Write(key + ": " + value);
             }
-            this.writeEndTag("td");
+            this.WriteEndTag("td");
 
-            this.writeBeginTag("td", rowspan);
+            this.WriteBeginTag("td", rowspan);
             htmlWriter.Write(logEvent.Element.LogMessage);
-            this.writeEndTag("td");
+            this.WriteEndTag("td");
 
-            this.writeEndTag("tr");
+            this.WriteEndTag("tr");
 
             for (int i = 1; i < metadataKeys.Count; i++)
             {
-                this.writeBeginTag("tr");
+                this.WriteBeginTag("tr");
 
-                this.writeBeginTag("td");
-                string key = metadataKeys.ElementAt<string>(i);
+                this.WriteBeginTag("td");
+                string key = metadataKeys.ElementAt(i);
                 string value = "";
-                List<string> values = new List<string>();
-                logEvent.getMetadata(key, out values);
+                List<string> values;
+                logEvent.GetMetadata(key, out values);
                 foreach (string metadata in values)
                 {
                     value += "<br>" + metadata;
                 }
                 htmlWriter.Write(key + ": " + value);
-                this.writeEndTag("td");
+                this.WriteEndTag("td");
 
-                this.writeEndTag("tr");
+                this.WriteEndTag("tr");
             }
         }
 
-        private void writeMetadata(LogEvent logEvent) { }
+        private void WriteMetadata(LogEvent logEvent) { }
         
 
-        private void writeBeginTag(string tag, string attributes = "")
+        private void WriteBeginTag(string tag, string attributes = "")
         {
             htmlWriter.WriteBeginTag(tag);
             htmlWriter.Write(attributes + HtmlTextWriter.TagRightChar);
         }
 
-        private void writeEndTag(string tag)
+        private void WriteEndTag(string tag)
         {
             htmlWriter.WriteEndTag(tag);
         }

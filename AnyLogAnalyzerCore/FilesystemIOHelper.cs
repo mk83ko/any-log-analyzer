@@ -1,25 +1,20 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.IO;
 
-namespace Mkko.AnyLogAnalyzerCore
+namespace Mkko
 {
-    class FilesystemIOHelper
+    class FilesystemIoHelper
     {
-        public static bool fileExists(string uri)
+        public static bool FileExists(string uri)
         {
             return File.Exists(uri);
         }
 
-        public static FileInfo getFileInfo(string uri)
+        public static FileInfo GetFileInfo(string uri)
         {
             return new FileInfo(uri);
         }
 
-        public static StreamWriter openFileForWriting(string uri)
+        public static StreamWriter OpenFileForWriting(string uri)
         {
             return new StreamWriter(uri);
         }
