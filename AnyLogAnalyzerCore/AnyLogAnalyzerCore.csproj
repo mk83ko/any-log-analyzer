@@ -46,7 +46,7 @@
   <ItemGroup>
     <Compile Include="BadConfigurationException.cs" />
     <Compile Include="EventDefinition\IEventParser.cs" />
-    <Compile Include="EventDefinition\JSONEventParser.cs" />
+    <Compile Include="EventDefinition\JsonEventParser.cs" />
     <Compile Include="FilesystemIOHelper.cs" />
     <Compile Include="LogFileReader\ILogFileReader.cs" />
     <Compile Include="LogFileReader\SimpleLogReader.cs" />

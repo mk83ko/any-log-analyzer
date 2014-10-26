@@ -30,7 +30,8 @@ namespace Mkko.AnyLogAnalyzerTests.Core
         [ExpectedException(typeof(BadConfigurationException))]
         public void LogfileUriNotSpecified()
         {
-            var reader = this.GetSimpleLogReader(null, SimpleLogReaderTest.EmbeddedJsonDefinitionsFileForJbossLog);
+            var jsonDefinition = SimpleLogReaderTest.EmbeddedJsonDefinitionsFileForJbossLog;
+            var reader = this.GetSimpleLogReader(null, jsonDefinition);
             this.Iterate(reader);
         }
 
@@ -38,15 +39,17 @@ namespace Mkko.AnyLogAnalyzerTests.Core
         [ExpectedException(typeof(BadConfigurationException))]
         public void DefinitionsNotSpecified()
         {
-            var reader = this.GetSimpleLogReader(SimpleLogReaderTest.EmbeddedJbossLogfile, null);
+            var jbossLog = SimpleLogReaderTest.EmbeddedJbossLogfile;
+            var reader = this.GetSimpleLogReader(jbossLog, null);
             this.Iterate(reader);
         }
 
         [Test]
         public void FindsExpectedEventInLogfile()
         {
-            var reader = this.GetSimpleLogReader(SimpleLogReaderTest.EmbeddedJbossLogfile,
-                SimpleLogReaderTest.EmbeddedJsonDefinitionsFileForJbossLog);
+            var jbossLog = SimpleLogReaderTest.EmbeddedJbossLogfile;
+            var jsonDefinition = SimpleLogReaderTest.EmbeddedJsonDefinitionsFileForJbossLog;
+            var reader = this.GetSimpleLogReader(jbossLog, jsonDefinition);
             var numberOfEvents = 0;
             foreach (var logEvent in reader.GetEventIterator())
             {
@@ -87,7 +90,8 @@ namespace Mkko.AnyLogAnalyzerTests.Core
             try
             {
                 // check if resource is embedded into assembly (for tests with actual files)
-                streamReader = new StreamReader(Assembly.GetExecutingAssembly().GetManifestResourceStream(fileOrResource));
+                var resourceStream = Assembly.GetExecutingAssembly().GetManifestResourceStream(fileOrResource);
+                streamReader = new StreamReader(resourceStream);
             }
             catch (ArgumentNullException)
             {

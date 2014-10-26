@@ -97,8 +97,7 @@ namespace Mkko.EventDefinition
                         logEvent.AddMetadata(key, matches);
                     }
                 }
-                //TODO timestamp got moved to metadata
-                if (timestamp.Pattern != null && timestamp.Format != null)
+                if (!String.IsNullOrEmpty(timestamp.Pattern) && !String.IsNullOrEmpty(timestamp.Format))
                 {
                     List<string> rawTimestamp;
                     if (StringHelper.TryGetMatch(element.LogMessage, timestamp.Pattern, out rawTimestamp))

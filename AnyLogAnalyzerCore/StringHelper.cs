@@ -10,6 +10,9 @@ namespace Mkko
         public static bool TryGetMatch(string input, string regex, out List<string> matches)
         {
             matches = new List<String>();
+            if (string.IsNullOrEmpty(regex))
+                return false;
+
             var collectionOfMatches = (new Regex(regex)).Matches(input);
             foreach (var match in collectionOfMatches.Cast<Match>())
             {

@@ -13,5 +13,14 @@ namespace Mkko
         /// Property holding a <see cref="List{T}"/> of <see cref="DefinitionElement"/>s.
         /// </summary>
         public List<DefinitionElement> Definitions { get; set; }
+
+        /// <summary>
+        /// Default constructor provides empty Timestamp and Definitions properties.
+        /// </summary>
+        public DefinitionProvider()
+        {
+            this.Timestamp = new Timestamp();
+            this.Definitions = new List<DefinitionElement>();
+        }
     }
 }
