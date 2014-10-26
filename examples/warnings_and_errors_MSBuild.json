@@ -1,7 +1,7 @@
 {
     "Timestamp": {
         "Pattern": "\\d{2}-\\D{3}-\\d{4} \\d{2}:\\d{2}:\\d{2}",
-        "Format": "dd-MMM-yyyy hh:mm:ss"
+        "Format": "dd-MMM-yyyy HH:mm:ss"
     },
     "Definitions": [ 
         {
