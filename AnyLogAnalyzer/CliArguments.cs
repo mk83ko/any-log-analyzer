@@ -1,10 +1,11 @@
 ﻿using CommandLine;
+using CommandLine.Text;
 
 namespace Mkko
 {
     class CliArguments
     {
-        [Option('l', "log file", Required = true, HelpText = "log file to read.")]
+        [Option('l', "logfile", Required = true, HelpText = "log file to read.")]
         public string Logfile { get; set; }
 
         [Option('d', "definitions", Required = true, HelpText = "file containing the event definitions.")]
@@ -18,5 +19,12 @@ namespace Mkko
 
         [Option('r', "returnCode", DefaultValue = false, Required = false, HelpText = "if set to true, the application returns the number of events as return code to the caller.")]
         public bool NumberOfEventsAsReturnCode { get; set; }
+
+        [HelpOption]
+        public string GetUsage()
+        {
+            return HelpText.AutoBuild(this,
+              (HelpText current) => HelpText.DefaultParsingErrorsHandler(this, current));
+        }
     }
 }

@@ -42,7 +42,6 @@ namespace Mkko
                     Console.WriteLine(jre.Message);
                 }
             }
-            PrintUsage();
             return 1;
         }
 
@@ -88,11 +87,6 @@ namespace Mkko
             }
 
             return events;
-        }
-
-        private static void PrintUsage()
-        {
-            Console.WriteLine("print usage here");
         }
     }
 }
