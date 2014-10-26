@@ -12,10 +12,6 @@ namespace Mkko.EventDefinition
     /// </summary>
     public class JsonEventParser : IEventParser
     {
-        /// <summary>
-        /// The URI to the file holding the event definition.
-        /// </summary>
-        public string DefinitionFile { get; set; }
 
         private DefinitionProvider definitionProvider;
 
@@ -25,14 +21,19 @@ namespace Mkko.EventDefinition
         /// <param name="jsonUri">File URI of a JSON formatted definition file for logfile events.</param>
         public JsonEventParser(string jsonUri)
         {
-            this.DefinitionFile = jsonUri;
-            this.InitializeDefinitions();
-
-            foreach (DefinitionElement def in definitionProvider.Definitions)
-            {
-                Console.WriteLine(def.ToString());
-            }
+            this.InitializeDefinitions(jsonUri);
         }
+
+
+        /// <summary>
+        /// Constructor for initializing a <c>JsonEventParser</c> object with an already initialized <see cref="StreamReader"/>.
+        /// </summary>
+        /// <param name="jsonFile"></param>
+        public JsonEventParser(StreamReader jsonFile)
+        {
+            this.ReadJsonDefinitions(jsonFile);
+        }
+
 
         /// <summary>
         /// Parses a single <see cref="LogElement"/> object and returns all <see cref="LogEvent"/>s that match the parsed object.
@@ -43,10 +44,10 @@ namespace Mkko.EventDefinition
         public bool GetEvent(LogElement element, out List<LogEvent> events)
         {
             events = new List<LogEvent>();
-            bool match = false;
-            foreach (DefinitionElement def in this.definitionProvider.Definitions)
+            var match = false;
+            foreach (var def in this.definitionProvider.Definitions)
             {
-                foreach (string regex in def.DetectionPatterns)
+                foreach (var regex in def.DetectionPatterns)
                 {
                     List<string> matches;
                     if (StringHelper.TryGetMatch(element.LogMessage, regex, out matches))
@@ -60,29 +61,32 @@ namespace Mkko.EventDefinition
             return match;
         }
 
-        private void InitializeDefinitions()
+        private void InitializeDefinitions(string jsonUri)
         {
-            if (!FilesystemIoHelper.FileExists(this.DefinitionFile))
+            if (!FilesystemIoHelper.FileExists(jsonUri))
             {
-                throw new FileNotFoundException("can't access definition file: " + this.DefinitionFile, this.DefinitionFile);
+                throw new BadConfigurationException("can't access definition file: " + jsonUri, jsonUri);
             }
-            this.ReadJsonDefinitions();
+
+            var jsonFile = FilesystemIoHelper.GetFileInfo(jsonUri);
+            this.ReadJsonDefinitions(jsonFile.OpenText());
         }
 
-        private void ReadJsonDefinitions()
+        private void ReadJsonDefinitions(StreamReader jsonFile)
         {
+            if (jsonFile == null)
+                throw new BadConfigurationException("eventDefinitions", "null");
+
             try
             {
-                FileInfo file = FilesystemIoHelper.GetFileInfo(this.DefinitionFile);
-                string jsonAsString = file.OpenText().ReadToEnd();
-                this.definitionProvider = JsonConvert.DeserializeObject<DefinitionProvider>(jsonAsString);
+                this.definitionProvider = JsonConvert.DeserializeObject<DefinitionProvider>(jsonFile.ReadToEnd());
             }
             catch (JsonReaderException jre) { throw jre; }
         }
 
         private LogEvent CreateEvent(DefinitionElement definition, Timestamp timestamp, LogElement element)
         {
-            LogEvent logEvent = new LogEvent(definition.Category, element);
+            var logEvent = new LogEvent(definition.Category, element);
             foreach (string key in definition.GetMetadataKeys())
             {
                 string regex;
@@ -93,6 +97,7 @@ namespace Mkko.EventDefinition
                         logEvent.AddMetadata(key, matches);
                     }
                 }
+                //TODO timestamp got moved to metadata
                 if (timestamp.Pattern != null && timestamp.Format != null)
                 {
                     List<string> rawTimestamp;

@@ -15,7 +15,7 @@ namespace Mkko.LogFileReader
         IEnumerable<LogEvent> GetEventIterator();
 
         /// <summary>
-        /// URI of logfile to be analyzed.
+        /// identifier for the logfile to be analyzed (e.g. the URI of a text file).
         /// </summary>
         string Logfile { get; set; }
 

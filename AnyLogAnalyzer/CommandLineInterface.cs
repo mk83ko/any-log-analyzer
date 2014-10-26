@@ -16,10 +16,10 @@ namespace Mkko
 
         static int Main(string[] args)
         {
-            CliArguments arguments = new CliArguments();
+            var arguments = new CliArguments();
             if (Parser.Default.ParseArguments(args, arguments)){
                 
-                CommandLineInterface cli = new CommandLineInterface();
+                var cli = new CommandLineInterface();
 
                 try
                 {

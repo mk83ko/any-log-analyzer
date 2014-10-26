@@ -24,10 +24,22 @@ namespace Mkko.LogFileReader
         /// <summary>
         /// Constructor used to initialize a <code>SimpleLogReader</code> object.
         /// </summary>
-        /// <param name="logfile"></param>
+        /// <param name="logfile">This <c>string</c> will be interpreted as URI and used to initialize a <see cref="StreamReader"/>.</param>
         public SimpleLogReader(string logfile)
         {
+            this.currentLine = 0;
             this.Logfile = logfile;
+        }
+
+        /// <summary>
+        /// Constructor used to initialize a <code>SimpleLogReader</code> objects with an already initialized <see cref="StreamReader"/>.
+        /// </summary>
+        /// <param name="logfile">This <c>string</c> serves as the logfile's identifier.</param>
+        /// <param name="streamreader"><see cref="StreamReader"/> object used to parse the logfile.</param>
+        public SimpleLogReader(string logfile, StreamReader streamreader) : this(logfile)
+        {
+            this.currentLine = 0;
+            this.streamreader = streamreader;
         }
 
         /// <summary>
@@ -65,7 +77,7 @@ namespace Mkko.LogFileReader
 
             if (!FilesystemIoHelper.FileExists(this.Logfile))
             {
-                string message = "The specified logfile " + this.Logfile + " was not found";
+                var message = "The specified logfile " + this.Logfile + " was not found";
                 throw new BadConfigurationException(message);
             }
             this.streamreader = (FilesystemIoHelper.GetFileInfo(this.Logfile)).OpenText();

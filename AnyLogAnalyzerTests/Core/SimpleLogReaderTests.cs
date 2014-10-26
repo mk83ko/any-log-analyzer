@@ -1,49 +1,61 @@
 ﻿using System;
-using Mkko;
+using System.Collections.Generic;
+using System.IO;
+using System.Reflection;
 using Mkko.EventDefinition;
 using Mkko.LogFileReader;
-
 using NUnit.Framework;
+using Assert = Microsoft.VisualStudio.TestTools.UnitTesting.Assert;
 
-namespace AnyLogAnalyzerTests.Core
+namespace Mkko.AnyLogAnalyzerTests.Core
 {
     [TestFixture]
     public class SimpleLogReaderTest
     {
-        private readonly string existingLogfile;
-        private readonly string existingDefinitionsFile;
-
-        public SimpleLogReaderTest()
-        {
-            this.existingLogfile = System.Reflection.Assembly.GetEntryAssembly().Location + "\\jboss-boot.log";
-            this.existingDefinitionsFile = System.Reflection.Assembly.GetEntryAssembly().Location + "\\jboss.json";
-        }
+        private static string ExecutingAssemblyPath =
+            Path.GetDirectoryName(new Uri(Assembly.GetExecutingAssembly().Location).LocalPath);
+        private const string EmbeddedJbossLogfile = "Mkko.AnyLogAnalyzerTests.res.jboss-boot.log";
+        private const string EmbeddedJsonDefinitionsFileForJbossLog = "Mkko.AnyLogAnalyzerTests.res.jboss.json";
 
         [Test]
-        [ExpectedException(typeof(BadConfigurationException))]
+        [ExpectedException(typeof(FileNotFoundException))]
         public void NotExistingFileThrowsFileNotFoundException()
         {
-            var reader = this.getSimpleLogReader(System.Reflection.Assembly.GetEntryAssembly().Location + "this-file-wont.exist", this.existingDefinitionsFile);
-            this.iterate(reader);
+            var logfile = SimpleLogReaderTest.ExecutingAssemblyPath + "this-file-wont.exist";
+            var reader = this.GetSimpleLogReader(logfile, SimpleLogReaderTest.EmbeddedJsonDefinitionsFileForJbossLog);
+            this.Iterate(reader);
         }
 
         [Test]
         [ExpectedException(typeof(BadConfigurationException))]
         public void LogfileUriNotSpecified()
         {
-            var reader = this.getSimpleLogReader(null, this.existingDefinitionsFile);
-            this.iterate(reader);
+            var reader = this.GetSimpleLogReader(null, SimpleLogReaderTest.EmbeddedJsonDefinitionsFileForJbossLog);
+            this.Iterate(reader);
         }
 
         [Test]
         [ExpectedException(typeof(BadConfigurationException))]
         public void DefinitionsNotSpecified()
         {
-            var reader = this.getSimpleLogReader(this.existingLogfile, null);
-            this.iterate(reader);
+            var reader = this.GetSimpleLogReader(SimpleLogReaderTest.EmbeddedJbossLogfile, null);
+            this.Iterate(reader);
         }
 
-        private void iterate(ILogFileReader reader)
+        [Test]
+        public void FindsExpectedEventInLogfile()
+        {
+            var reader = this.GetSimpleLogReader(SimpleLogReaderTest.EmbeddedJbossLogfile,
+                SimpleLogReaderTest.EmbeddedJsonDefinitionsFileForJbossLog);
+            var numberOfEvents = 0;
+            foreach (var logEvent in reader.GetEventIterator())
+            {
+                numberOfEvents++;
+            }
+            Assert.AreEqual(1, numberOfEvents);
+        }
+
+        private void Iterate(ILogFileReader reader)
         {
             foreach (var logEvent in reader.GetEventIterator())
             {
@@ -51,11 +63,38 @@ namespace AnyLogAnalyzerTests.Core
             }
         }
 
-        private SimpleLogReader getSimpleLogReader(string logfile, string definitions)
+        private SimpleLogReader GetSimpleLogReader(string logfile, string definitions)
         {
-            var reader = new SimpleLogReader(logfile) {EventDefinition = new JsonEventParser(definitions)};
+            StreamReader streamReader = null;
+            StreamReader jsonDefinitons = null;
+            if (logfile != null)
+            {
+                streamReader = this.GetEmbeddedResourceAsStreamReader(logfile);
+            }
+            if (definitions != null)
+            {
+                jsonDefinitons = this.GetEmbeddedResourceAsStreamReader(definitions);
+            }
+
+            var reader = new SimpleLogReader(logfile, streamReader) {EventDefinition = new JsonEventParser(jsonDefinitons)};
 
             return reader;
+        }
+
+        private StreamReader GetEmbeddedResourceAsStreamReader(string fileOrResource)
+        {
+            StreamReader streamReader = null;
+            try
+            {
+                // check if resource is embedded into assembly (for tests with actual files)
+                streamReader = new StreamReader(Assembly.GetExecutingAssembly().GetManifestResourceStream(fileOrResource));
+            }
+            catch (ArgumentNullException)
+            {
+                // else assume that given string is a file URI
+                streamReader = new StreamReader(fileOrResource);
+            }
+            return streamReader;
         }
     }
 }

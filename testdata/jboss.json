@@ -1,9 +1,9 @@
 {
     "Definitions": [ 
         {
-        "Category": "JBoss",
+        "Category": "JBoss shutdown",
         "IsRegex": true,
-        "DetectionPatterns": [ "^.*\\sDEBUG\\s" ],
+        "DetectionPatterns": [ "^.*JBAS015950" ],
         "Metadata": {
             "class": "\\[.*\\]",
             "timestamp": "\\D\\D:\\D\\D:\\D\\D"
