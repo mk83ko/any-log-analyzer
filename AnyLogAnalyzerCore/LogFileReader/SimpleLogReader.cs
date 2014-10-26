@@ -80,7 +80,7 @@ namespace Mkko.LogFileReader
                 var message = "The specified logfile " + this.Logfile + " was not found";
                 throw new BadConfigurationException(message);
             }
-            this.streamreader = (FilesystemIoHelper.GetFileInfo(this.Logfile)).OpenText();
+            this.streamreader = FilesystemIoHelper.GetStreamReader(this.Logfile);
         }
 
         private void CloseFileStream()

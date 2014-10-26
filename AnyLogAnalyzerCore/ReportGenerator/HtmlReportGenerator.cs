@@ -35,7 +35,7 @@ namespace Mkko.ReportGenerator
         /// <param name="events"><see cref="SortedSet{T}"/> of <see cref="LogEvent"/>s found in a logfile.</param>
         public void CreateReport(SortedSet<LogEvent> events)
         {
-            var streamWriter = FilesystemIoHelper.OpenFileForWriting(this.FileName);
+            var streamWriter = FilesystemIoHelper.GetStreamWriter(this.FileName);
             htmlWriter = new HtmlTextWriter(streamWriter);
 
             this.WriteHead();

@@ -54,6 +54,7 @@
   </Choose>
   <ItemGroup>
     <Compile Include="Core\SimpleLogReaderTests.cs" />
+    <Compile Include="Data\LogEventTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

@@ -55,6 +55,7 @@ namespace Mkko
             return false;
         }
 
+        /// <inheritdoc />
         public override string ToString()
         {
             string output = Category + ": \r\n";

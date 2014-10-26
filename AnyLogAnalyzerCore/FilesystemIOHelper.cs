@@ -14,7 +14,12 @@ namespace Mkko
             return new FileInfo(uri);
         }
 
-        public static StreamWriter OpenFileForWriting(string uri)
+        public static StreamReader GetStreamReader(string uri)
+        {
+            return new StreamReader(uri);
+        }
+
+        public static StreamWriter GetStreamWriter(string uri)
         {
             return new StreamWriter(uri);
         }

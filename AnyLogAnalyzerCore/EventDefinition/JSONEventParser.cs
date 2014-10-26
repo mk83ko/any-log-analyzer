@@ -67,9 +67,7 @@ namespace Mkko.EventDefinition
             {
                 throw new BadConfigurationException("can't access definition file: " + jsonUri, jsonUri);
             }
-
-            var jsonFile = FilesystemIoHelper.GetFileInfo(jsonUri);
-            this.ReadJsonDefinitions(jsonFile.OpenText());
+            this.ReadJsonDefinitions(FilesystemIoHelper.GetStreamReader(jsonUri));
         }
 
         private void ReadJsonDefinitions(StreamReader jsonFile)
