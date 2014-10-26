@@ -16,7 +16,7 @@ namespace Mkko.EventDefinition
         private DefinitionProvider definitionProvider;
 
         /// <summary>
-        /// Constructor to initialize a <c>JSONEventParser</c> object. Please note that given <paramref name="jsonUri"/> must point to a valid JSON file.
+        /// Constructor to initialize a <c>JsonEventParser</c> object. Please note that given <paramref name="jsonUri"/> must point to a valid JSON file.
         /// </summary>
         /// <param name="jsonUri">File URI of a JSON formatted definition file for logfile events.</param>
         public JsonEventParser(string jsonUri)
@@ -79,7 +79,12 @@ namespace Mkko.EventDefinition
             {
                 this.definitionProvider = JsonConvert.DeserializeObject<DefinitionProvider>(jsonFile.ReadToEnd());
             }
-            catch (JsonReaderException jre) { throw jre; }
+            catch (JsonReaderException jre)
+            {
+                string message = "Can't read JSON definition file. Exception was thrown while parsing file:\n" +
+                                 jre.Message;
+                throw new BadConfigurationException(message);
+            }
         }
 
         private LogEvent CreateEvent(DefinitionElement definition, Timestamp timestamp, LogElement element)
