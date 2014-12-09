@@ -1,0 +1,16 @@
+﻿{
+    "Timestamp": {
+        "Pattern": "\\d{2}:\\d{2}:\\d{2}",
+        "Format": "HH:mm:ss"
+    },
+    "Definitions": [ 
+        {
+        "Category": "JBoss shutdown",
+        "IsRegex": true,
+        "DetectionPatterns": [ "^.*JBAS015950" ],
+        "Metadata": {
+            "class": "\\[.*\\]",
+            }
+        }
+    ]
+}
