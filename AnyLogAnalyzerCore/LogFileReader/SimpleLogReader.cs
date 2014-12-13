@@ -78,7 +78,7 @@ namespace Mkko.LogFileReader
             if (!FilesystemIoHelper.FileExists(this.Logfile))
             {
                 var message = "The specified logfile " + this.Logfile + " was not found";
-                throw new BadConfigurationException(message);
+                throw new FileNotFoundException(message, this.Logfile);
             }
             this.streamreader = FilesystemIoHelper.GetStreamReader(this.Logfile);
         }

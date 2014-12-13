@@ -68,6 +68,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CliReturnCodes.cs" />
     <Compile Include="CliArguments.cs" />
     <Compile Include="CommandLineInterface.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

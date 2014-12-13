@@ -54,7 +54,9 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
+    <Compile Include="CliApp\CommandLineInterfaceTests.cs" />
     <Compile Include="Core\SimpleLogReaderTests.cs" />
+    <Compile Include="TestConstants.cs" />
     <Compile Include="Data\LogEventTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

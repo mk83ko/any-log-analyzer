@@ -4,6 +4,7 @@ using System.IO;
 using System.Reflection;
 using Mkko.EventDefinition;
 using Mkko.LogFileReader;
+using Mkko.AnyLogAnalyzerTests;
 using NUnit.Framework;
 using Assert = Microsoft.VisualStudio.TestTools.UnitTesting.Assert;
 
@@ -12,17 +13,12 @@ namespace Mkko.AnyLogAnalyzerTests.Core
     [TestFixture]
     public class SimpleLogReaderTest
     {
-        private static string ExecutingAssemblyPath =
-            Path.GetDirectoryName(new Uri(Assembly.GetExecutingAssembly().Location).LocalPath);
-        private const string EmbeddedJbossLogfile = "Mkko.AnyLogAnalyzerTests.res.jboss-boot.log";
-        private const string EmbeddedJsonDefinitionsFileForJbossLog = "Mkko.AnyLogAnalyzerTests.res.jboss.json";
-
         [Test]
         [ExpectedException(typeof(FileNotFoundException))]
         public void NotExistingFileThrowsFileNotFoundException()
         {
-            var logfile = SimpleLogReaderTest.ExecutingAssemblyPath + "this-file-wont.exist";
-            var reader = this.GetSimpleLogReader(logfile, SimpleLogReaderTest.EmbeddedJsonDefinitionsFileForJbossLog);
+            var logfile = TestConstants.ExecutingAssemblyPath + "this-file-wont.exist";
+            var reader = this.GetSimpleLogReader(logfile, TestConstants.EmbeddedJsonDefinitionsFileForJbossLog);
             this.Iterate(reader);
         }
 
@@ -30,7 +26,7 @@ namespace Mkko.AnyLogAnalyzerTests.Core
         [ExpectedException(typeof(BadConfigurationException))]
         public void LogfileUriNotSpecified()
         {
-            var jsonDefinition = SimpleLogReaderTest.EmbeddedJsonDefinitionsFileForJbossLog;
+            var jsonDefinition = TestConstants.EmbeddedJsonDefinitionsFileForJbossLog;
             var reader = this.GetSimpleLogReader(null, jsonDefinition);
             this.Iterate(reader);
         }
@@ -39,7 +35,7 @@ namespace Mkko.AnyLogAnalyzerTests.Core
         [ExpectedException(typeof(BadConfigurationException))]
         public void DefinitionsNotSpecified()
         {
-            var jbossLog = SimpleLogReaderTest.EmbeddedJbossLogfile;
+            var jbossLog = TestConstants.EmbeddedJbossLogfile;
             var reader = this.GetSimpleLogReader(jbossLog, null);
             this.Iterate(reader);
         }
@@ -47,8 +43,8 @@ namespace Mkko.AnyLogAnalyzerTests.Core
         [Test]
         public void FindsExpectedEventInLogfile()
         {
-            var jbossLog = SimpleLogReaderTest.EmbeddedJbossLogfile;
-            var jsonDefinition = SimpleLogReaderTest.EmbeddedJsonDefinitionsFileForJbossLog;
+            var jbossLog = TestConstants.EmbeddedJbossLogfile;
+            var jsonDefinition = TestConstants.EmbeddedJsonDefinitionsFileForJbossLog;
             var reader = this.GetSimpleLogReader(jbossLog, jsonDefinition);
             var numberOfEvents = 0;
             foreach (var logEvent in reader.GetEventIterator())

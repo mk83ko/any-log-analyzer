@@ -65,7 +65,7 @@ namespace Mkko.EventDefinition
         {
             if (!FilesystemIoHelper.FileExists(jsonUri))
             {
-                throw new BadConfigurationException("can't access definition file: " + jsonUri, jsonUri);
+                throw new FileNotFoundException("can't access definition file: " + jsonUri, jsonUri);
             }
             this.ReadJsonDefinitions(FilesystemIoHelper.GetStreamReader(jsonUri));
         }

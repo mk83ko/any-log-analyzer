@@ -9,16 +9,17 @@ using Newtonsoft.Json;
 
 namespace Mkko
 {
-    class CommandLineInterface
+    public class CommandLineInterface
     {
         private ILogFileReader reader;
         private IReportGenerator generator;
 
-        static int Main(string[] args)
+        public static int Main(string[] args)
         {
             var arguments = new CliArguments();
-            if (Parser.Default.ParseArguments(args, arguments)){
-                
+            if (Parser.Default.ParseArguments(args, arguments))
+            {
+
                 var cli = new CommandLineInterface();
 
                 try
@@ -31,45 +32,43 @@ namespace Mkko
                     {
                         return events.Count;
                     }
-                    return 0;
+                    return (int) CliReturnCodes.ExecutionSuccessful;
                 }
                 catch (FileNotFoundException fnf)
                 {
                     Console.WriteLine(fnf.Message);
+                    return (int) CliReturnCodes.FileNotFound;
                 }
                 catch (JsonReaderException jre)
                 {
                     Console.WriteLine(jre.Message);
                 }
             }
-            return 1;
+            else
+            {
+                Console.WriteLine("not all mandatory parameters were specified. use --help for further information.");
+                return (int) CliReturnCodes.MissingParameters;
+            }
+
+            return (int)CliReturnCodes.UnhandledException;
         }
 
         private void Initialize(CliArguments arguments)
         {
-            try
-            {
-                IEventParser definitions = new JsonEventParser(arguments.Definitions);
+            IEventParser definitions = new JsonEventParser(arguments.Definitions);
+            reader = new SimpleLogReader(arguments.Logfile) { EventDefinition = definitions };
 
-                reader = new SimpleLogReader(arguments.Logfile);
-                reader.EventDefinition = definitions;
-
-                switch (arguments.Format)
-                {
-                    case "stdout":
-                        generator = new ConsolePrinter();
-                        break;
-                    case "html":
-                        this.InitializeHtmlReportGenerator(arguments);
-                        break;
-                    default:
-                        generator = new ConsolePrinter();
-                        break;
-                }
-            }
-            catch(Exception ex)
+            switch (arguments.Format)
             {
-                Console.Write(ex.Message);
+                case "stdout":
+                    generator = new ConsolePrinter();
+                    break;
+                case "html":
+                    this.InitializeHtmlReportGenerator(arguments);
+                    break;
+                default:
+                    generator = new ConsolePrinter();
+                    break;
             }
         }
 
