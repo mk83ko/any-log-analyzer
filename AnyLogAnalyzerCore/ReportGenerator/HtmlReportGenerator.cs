@@ -1,12 +1,13 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
 using System.Linq;
-using System.Web.UI;
+using System.Reflection;
+using System.Text;
+using HtmlAgilityPack;
 
 namespace Mkko.ReportGenerator
 {
-    /// <summary>
-    /// This implementation of <see cref="IReportGenerator"/> creates a HTML report./>
-    /// </summary>
     public class HtmlReportGenerator : IReportGenerator
     {
         /// <summary>
@@ -17,17 +18,16 @@ namespace Mkko.ReportGenerator
         /// This property holds the URI to the analyzed logfile.
         /// </summary>
         public string LogFile { get; set; }
-
-        private HtmlTextWriter htmlWriter;
-
         /// <summary>
-        /// Constructor to be used to initialize a <c>HtmlReportGenerator</c> object.
+        /// This property defines the columns of the report to be generated from the logfile.
         /// </summary>
-        /// <param name="output">This string holds the URI for the output report file.</param>
-        public HtmlReportGenerator(string output)
-        {
-            this.FileName = output;
-        }
+        public string[] TableColumns { get; set; }
+
+        private const string HtmlTemplate = "Mkko.res.html.template.html";
+        private const string LogEventTableId = "log-event-table";
+        private HtmlDocument document;
+        private HtmlNodeCollection table;
+        private string rowStructure;
 
         /// <summary>
         /// Creates a HTML report for a given set of <paramref name="events"/>.
@@ -35,125 +35,71 @@ namespace Mkko.ReportGenerator
         /// <param name="events"><see cref="SortedSet{T}"/> of <see cref="LogEvent"/>s found in a logfile.</param>
         public void CreateReport(SortedSet<LogEvent> events)
         {
-            var streamWriter = FilesystemIoHelper.GetStreamWriter(this.FileName);
-            htmlWriter = new HtmlTextWriter(streamWriter);
-
-            this.WriteHead();
-
-            this.WriteBeginTag("table", " border=1 width=100%");
-            this.WriteTableHeader();
-
-            foreach (LogEvent logEvent in events)
-            {
-                this.WriteTableRow(logEvent);
-            }
-
-            htmlWriter.WriteEndTag("table");
-        }
-
-        private void WriteHead()
-        {
-            string title = "analysis of log file " + this.LogFile;
-
-            this.WriteBeginTag("title");
-            htmlWriter.Write(title);
-            this.WriteEndTag("title");
-
-            this.WriteBeginTag("h1");
-            htmlWriter.Write(title);
-            this.WriteEndTag("h1");
-        }
-
-        private void WriteTableHeader()
-        {
-            string[] headers = { "category", "timestamp", "linenumber", "metadata", "element" };
+            this.createRowStructure();
+            this.LoadHtmlTemplate();
+            this.AddTableHeaders();
             
-            this.WriteBeginTag("tr");
-            foreach (string head in headers)
-            {
-                this.WriteBeginTag("td");
-                htmlWriter.Write(head);
-                this.WriteEndTag("td");
-            }
-            this.WriteEndTag("tr");
+            foreach (var singleEvent in events)
+                this.AddRow(singleEvent);
+
+            this.DeployHtmlReport();
         }
 
-        private void WriteTableRow(LogEvent logEvent)
+        private void createRowStructure()
         {
-            List<string> metadataKeys = logEvent.GetMetadataKeys();
-            string rowspan = "";
-            if (metadataKeys.Count > 1)
+            var rowStructure = new StringBuilder("<tr>");
+            foreach (var column in this.TableColumns)
+                rowStructure.Append("<td>%" + column + "%</td>");
+
+            rowStructure.Append("</tr>");
+            this.rowStructure = rowStructure.ToString();
+        }
+
+        private void LoadHtmlTemplate()
+        {
+            this.document = new HtmlDocument();
+            this.document.Load( Assembly.GetExecutingAssembly().GetManifestResourceStream(HtmlTemplate) );
+
+            this.table = new HtmlNodeCollection(document.GetElementbyId(LogEventTableId));
+        }
+
+        private void AddTableHeaders()
+        {
+            var header = new StringBuilder(this.rowStructure);
+            foreach (var column in this.TableColumns)
+                header = header.Replace("<td>%" + column + "%</td>", "<th>" + column + "</th>");
+
+            table.Append(document.CreateTextNode(header.ToString()));
+        }
+
+        private void AddRow(LogEvent singleEvent)
+        {
+            var row = new StringBuilder(rowStructure);
+            var metadataKeys = singleEvent.GetMetadataKeys();
+            row = row.Replace("<td>%category%</td>", "<td>" + singleEvent.Category + "</td>");
+            row = row.Replace("<td>%timestamp%</td>", "<td>" + singleEvent.Timestamp + "</td>");
+            row = row.Replace("<td>%linenumber%</td>", "<td>" + singleEvent.Element.LineNumber + "</td>");
+
+            foreach (string key in metadataKeys)
             {
-                rowspan = " rowspan=" + metadataKeys.Count;
-            }
-
-            this.WriteBeginTag("tr");
-
-            this.WriteBeginTag("td", rowspan);
-            htmlWriter.Write(logEvent.Category);
-            this.WriteEndTag("td");
-
-            this.WriteBeginTag("td", rowspan);
-            htmlWriter.Write(logEvent.Timestamp);
-            this.WriteEndTag("td");
-
-            this.WriteBeginTag("td", rowspan);
-            htmlWriter.Write(logEvent.Element.LineNumber);
-            this.WriteEndTag("td");
-
-            this.WriteBeginTag("td");
-            if (metadataKeys.Count > 0)
-            {
-                string key = metadataKeys.ElementAt(0);
-                string value = "";
-                List<string> values;
-                logEvent.GetMetadata(key, out values);
-                foreach (string metadata in values)
+                var values = new List<string>();
+                var meta = new StringBuilder();
+                if (singleEvent.GetMetadata(key, out values))
                 {
-                    value += "<br>" + metadata;
+                    foreach (string value in values)
+                        meta.Append(value + "<br>");
                 }
-                htmlWriter.Write(key + ": " + value);
+                row = row.Replace("<td>%" + key + "%</td>", "<td>" + meta.ToString() + "</td>");
             }
-            this.WriteEndTag("td");
 
-            this.WriteBeginTag("td", rowspan);
-            htmlWriter.Write(logEvent.Element.LogMessage);
-            this.WriteEndTag("td");
-
-            this.WriteEndTag("tr");
-
-            for (int i = 1; i < metadataKeys.Count; i++)
-            {
-                this.WriteBeginTag("tr");
-
-                this.WriteBeginTag("td");
-                string key = metadataKeys.ElementAt(i);
-                string value = "";
-                List<string> values;
-                logEvent.GetMetadata(key, out values);
-                foreach (string metadata in values)
-                {
-                    value += "<br>" + metadata;
-                }
-                htmlWriter.Write(key + ": " + value);
-                this.WriteEndTag("td");
-
-                this.WriteEndTag("tr");
-            }
+            row = row.Replace("<td>%element%</td>", "<td>" + singleEvent.Element.LogMessage + "</td>");
+            table.Append(document.CreateTextNode(row.ToString()));
         }
 
-        private void WriteMetadata(LogEvent logEvent) { }
-        
-
-        private void WriteBeginTag(string tag, string attributes = "")
+        private void DeployHtmlReport()
         {
-            htmlWriter.WriteBeginTag(tag);
-            htmlWriter.Write(attributes + HtmlTextWriter.TagRightChar);
-        }
-
-        private void WriteEndTag(string tag)
-        {
-            htmlWriter.WriteEndTag(tag);
+            this.document.GetElementbyId(LogEventTableId).AppendChildren(table);
+            this.document.Save(new StreamWriter(FileName));
         }
     }
 }

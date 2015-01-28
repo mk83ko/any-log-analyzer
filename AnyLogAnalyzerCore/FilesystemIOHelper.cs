@@ -16,12 +16,24 @@ namespace Mkko
 
         public static StreamReader GetStreamReader(string uri)
         {
-            return new StreamReader(uri);
+            try
+            {
+                return new StreamReader(uri);
+            }
+            catch (IOException ioe)
+            {
+                return null;
+            }
         }
 
         public static StreamWriter GetStreamWriter(string uri)
         {
             return new StreamWriter(uri);
+        }
+
+        private static void copyLockedFile(string uri)
+        {
+            
         }
     }
 }

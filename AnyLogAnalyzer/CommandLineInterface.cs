@@ -25,7 +25,7 @@ namespace Mkko
                 try
                 {
                     cli.Initialize(arguments);
-                    SortedSet<LogEvent> events = cli.GetEvents();
+                    var events = cli.GetEvents();
                     cli.generator.CreateReport(events);
 
                     if (arguments.NumberOfEventsAsReturnCode)
@@ -74,12 +74,17 @@ namespace Mkko
 
         private void InitializeHtmlReportGenerator(CliArguments arguments){
             
-            generator = new HtmlReportGenerator(arguments.Output) { LogFile = arguments.Logfile };
+            generator = new HtmlReportGenerator()
+            {
+                LogFile = arguments.Logfile, 
+                FileName = arguments.Output,
+                TableColumns = arguments.Columns
+            };
         }
 
         private SortedSet<LogEvent> GetEvents()
         {
-            SortedSet<LogEvent> events = new SortedSet<LogEvent>();
+            var events = new SortedSet<LogEvent>();
             foreach (LogEvent logEvent in reader.GetEventIterator())
             {
                 events.Add(logEvent);

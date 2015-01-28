@@ -20,6 +20,9 @@ namespace Mkko
         [Option('r', "returnCode", DefaultValue = false, Required = false, HelpText = "if set to true, the application returns the number of events as return code to the caller.")]
         public bool NumberOfEventsAsReturnCode { get; set; }
 
+        [Option('c', "columns", DefaultValue = new string[] {"category", "timestamp", "linenumber", "element"}, Required = false, HelpText = "defines the columns of the report.")] 
+        public string[] Columns { get; set; }
+
         [HelpOption]
         public string GetUsage()
         {
