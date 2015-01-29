@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text;
+using System.Text.RegularExpressions;
 using HtmlAgilityPack;
 
 namespace Mkko.ReportGenerator
@@ -37,6 +38,7 @@ namespace Mkko.ReportGenerator
         {
             this.createRowStructure();
             this.LoadHtmlTemplate();
+            this.SetTitles();
             this.AddTableHeaders();
             
             foreach (var singleEvent in events)
@@ -63,6 +65,12 @@ namespace Mkko.ReportGenerator
             this.table = new HtmlNodeCollection(document.GetElementbyId(LogEventTableId));
         }
 
+        private void SetTitles()
+        {
+            var bodyTitle = this.document.GetElementbyId("body-document-title");
+            bodyTitle.ParentNode.ReplaceChild(HtmlTextNode.CreateNode("<h3 id=\"body-document-title\">Log-Events for " + this.LogFile + "</h3>"), bodyTitle);
+        }
+
         private void AddTableHeaders()
         {
             var header = new StringBuilder(this.rowStructure);
@@ -76,9 +84,9 @@ namespace Mkko.ReportGenerator
         {
             var row = new StringBuilder(rowStructure);
             var metadataKeys = singleEvent.GetMetadataKeys();
-            row = row.Replace("<td>%category%</td>", "<td>" + singleEvent.Category + "</td>");
-            row = row.Replace("<td>%timestamp%</td>", "<td>" + singleEvent.Timestamp + "</td>");
-            row = row.Replace("<td>%linenumber%</td>", "<td>" + singleEvent.Element.LineNumber + "</td>");
+            ReplacePlaceholder(ref row, "category", singleEvent.Category);
+            ReplacePlaceholder(ref row, "timestamp", singleEvent.Timestamp.ToString());
+            ReplacePlaceholder(ref row, "linenumber", singleEvent.Element.LineNumber.ToString());
 
             foreach (string key in metadataKeys)
             {
@@ -86,14 +94,18 @@ namespace Mkko.ReportGenerator
                 var meta = new StringBuilder();
                 if (singleEvent.GetMetadata(key, out values))
                 {
-                    foreach (string value in values)
+                    foreach (var value in values)
                         meta.Append(value + "<br>");
                 }
-                row = row.Replace("<td>%" + key + "%</td>", "<td>" + meta.ToString() + "</td>");
+                ReplacePlaceholder(ref row, key, meta.ToString());
             }
+            ReplacePlaceholder(ref row, "element", singleEvent.Element.LogMessage);
+            table.Append(document.CreateTextNode(Regex.Replace(row.ToString(),"%.*%","n/a")));
+        }
 
-            row = row.Replace("<td>%element%</td>", "<td>" + singleEvent.Element.LogMessage + "</td>");
-            table.Append(document.CreateTextNode(row.ToString()));
+        private static void ReplacePlaceholder(ref StringBuilder row, string key, string value)
+        {
+            row = row.Replace("<td>%" + key + "%</td>", "<td>" + value + "</td>");
         }
 
         private void DeployHtmlReport()

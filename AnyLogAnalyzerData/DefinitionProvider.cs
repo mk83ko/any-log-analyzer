@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 
 namespace Mkko
 {
@@ -22,5 +23,17 @@ namespace Mkko
             this.Timestamp = new Timestamp();
             this.Definitions = new List<DefinitionElement>();
         }
+
+        /// <summary>
+        /// returns a list of all defined metadata keys
+        /// </summary>
+        public List<string> GetAllMetadataKeys()
+        {
+            var keys = new List<string>();
+            foreach (var element in this.Definitions)
+                keys = keys.Union(element.GetMetadataKeys()).ToList();
+
+            return keys;
+        } 
     }
 }
