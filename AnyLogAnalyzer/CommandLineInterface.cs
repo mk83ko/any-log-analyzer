@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using CommandLine;
 using Mkko.EventDefinition;
 using Mkko.LogFileReader;
@@ -25,12 +26,11 @@ namespace Mkko
                 try
                 {
                     cli.Initialize(arguments);
-                    var events = cli.GetEvents();
-                    cli.generator.CreateReport(events);
+                    cli.generator.CreateReport(cli.reader.GetEventIterator());
 
                     if (arguments.NumberOfEventsAsReturnCode)
                     {
-                        return events.Count;
+                        return cli.reader.GetEventIterator().Count();
                     }
                     return (int) CliReturnCodes.ExecutionSuccessful;
                 }

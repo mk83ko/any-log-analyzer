@@ -34,9 +34,9 @@ namespace Mkko.ReportGenerator
         /// Creates a HTML report for a given set of <paramref name="events"/>.
         /// </summary>
         /// <param name="events"><see cref="SortedSet{T}"/> of <see cref="LogEvent"/>s found in a logfile.</param>
-        public void CreateReport(SortedSet<LogEvent> events)
+        public void CreateReport(IEnumerable<LogEvent> events)
         {
-            this.createRowStructure();
+            this.CreateRowStructure();
             this.LoadHtmlTemplate();
             this.SetTitles();
             this.AddTableHeaders();
@@ -47,7 +47,7 @@ namespace Mkko.ReportGenerator
             this.DeployHtmlReport();
         }
 
-        private void createRowStructure()
+        private void CreateRowStructure()
         {
             var rowStructure = new StringBuilder("<tr>");
             foreach (var column in this.TableColumns)

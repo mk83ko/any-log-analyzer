@@ -13,7 +13,7 @@ namespace Mkko.ReportGenerator
         /// Prints the supplied <c>LogEvent</c>s to console.
         /// </summary>
         /// <param name="events"><see cref="SortedSet{T}"/> of <see cref="LogEvent"/>s.</param>
-        public void CreateReport(SortedSet<LogEvent> events)
+        public void CreateReport(IEnumerable<LogEvent> events)
         {
             foreach (var logEvent in events)
             {

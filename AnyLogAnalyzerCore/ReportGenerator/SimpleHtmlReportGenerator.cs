@@ -33,7 +33,7 @@ namespace Mkko.ReportGenerator
         /// Creates a HTML report for a given set of <paramref name="events"/>.
         /// </summary>
         /// <param name="events"><see cref="SortedSet{T}"/> of <see cref="LogEvent"/>s found in a logfile.</param>
-        public void CreateReport(SortedSet<LogEvent> events)
+        public void CreateReport(IEnumerable<LogEvent> events)
         {
             var streamWriter = FilesystemIoHelper.GetStreamWriter(this.FileName);
             htmlWriter = new HtmlTextWriter(streamWriter);
@@ -43,7 +43,7 @@ namespace Mkko.ReportGenerator
             this.WriteBeginTag("table", " border=1 width=100%");
             this.WriteTableHeader();
 
-            foreach (LogEvent logEvent in events)
+            foreach (var logEvent in events)
             {
                 this.WriteTableRow(logEvent);
             }

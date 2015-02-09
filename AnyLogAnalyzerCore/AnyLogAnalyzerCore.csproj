@@ -55,6 +55,7 @@
     <Compile Include="EventDefinition\JsonEventParser.cs" />
     <Compile Include="FilesystemIOHelper.cs" />
     <Compile Include="LogFileReader\ILogFileReader.cs" />
+    <Compile Include="LogFileReader\ParallelLogReader.cs" />
     <Compile Include="LogFileReader\SimpleLogReader.cs" />
     <Compile Include="ReportGenerator\ConsolePrinter.cs" />
     <Compile Include="ReportGenerator\HtmlReportGenerator.cs" />

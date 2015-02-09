@@ -11,6 +11,6 @@ namespace Mkko.ReportGenerator
         /// Creates a report for a given <see cref="SortedSet{T}"/> of <see cref="LogEvent"/>s.
         /// </summary>
         /// <param name="events"></param>
-        void CreateReport(SortedSet<LogEvent> events);
+        void CreateReport(IEnumerable<LogEvent> events);
     }
 }
