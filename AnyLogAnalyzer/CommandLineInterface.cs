@@ -81,16 +81,5 @@ namespace Mkko
                 TableColumns = arguments.Columns
             };
         }
-
-        private SortedSet<LogEvent> GetEvents()
-        {
-            var events = new SortedSet<LogEvent>();
-            foreach (LogEvent logEvent in reader.GetEventIterator())
-            {
-                events.Add(logEvent);
-            }
-
-            return events;
-        }
     }
 }
