@@ -41,6 +41,7 @@
       <HintPath>..\packages\Newtonsoft.Json.6.0.6\lib\net40\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="System.configuration" />
     <Reference Include="System.Core" />
     <Reference Include="System.Web" />
     <Reference Include="System.Xml.Linq" />
@@ -51,6 +52,13 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BadConfigurationException.cs" />
+    <Compile Include="Configuration\AnyLogAnalyzerElement.cs" />
+    <Compile Include="Configuration\ExecutionEnvironmentCollection.cs" />
+    <Compile Include="Configuration\ExecutionEnvironmentSettings.cs" />
+    <Compile Include="Configuration\HtmlReportConfiguration\HtmlColumnCollection.cs" />
+    <Compile Include="Configuration\HtmlReportConfiguration\HtmlColumnElement.cs" />
+    <Compile Include="Configuration\HtmlReportConfiguration\HtmlReportSettings.cs" />
+    <Compile Include="Configuration\FileSettings.cs" />
     <Compile Include="EventDefinition\IEventParser.cs" />
     <Compile Include="EventDefinition\JsonEventParser.cs" />
     <Compile Include="FilesystemIOHelper.cs" />
@@ -72,8 +80,14 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
+    <Content Include="res\json\configuration.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <EmbeddedResource Include="res\json\jboss.json" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <EmbeddedResource Include="res\html\table.js" />
+  </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="res\html\kube.min.css" />
     <EmbeddedResource Include="res\html\template.html" />

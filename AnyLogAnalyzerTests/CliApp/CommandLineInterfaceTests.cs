@@ -1,6 +1,4 @@
-﻿using System;
-using Mkko;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Assert = NUnit.Framework.Assert;
 
 namespace Mkko.AnyLogAnalyzerTests.CliApp

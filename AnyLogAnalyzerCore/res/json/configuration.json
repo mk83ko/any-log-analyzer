@@ -1,0 +1,20 @@
+﻿{
+    
+    "default":{
+        "logfile": "./examples/logs/jboss.log",
+        "definitions": "./example/defs/jboss.json",
+        "format": "text",
+        "returncode": "false"
+    },
+    "html":
+        {
+            "format": "html",
+            "output": "example-result.html",
+            "columns": ["category:f,sa","timestamp:sn","element"]
+        },
+    "console":
+        {
+            "output": "example-result.txt",
+            "returncode": "true"
+        }
+}

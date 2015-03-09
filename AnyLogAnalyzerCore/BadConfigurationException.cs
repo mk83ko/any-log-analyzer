@@ -19,7 +19,7 @@ namespace Mkko
         /// <summary>
         /// Constructor to create an exception with parameter name and value of parameter that is somehow incorrect.
         /// </summary>
-        /// <param name="parameter">Name of the incorrect or missing parameter as <c>string</c>.</param>
+        /// <param name="parameter">Id of the incorrect or missing parameter as <c>string</c>.</param>
         /// <param name="value">Value of the incorrect or missing parameter as <c>string</c>.</param>
         public BadConfigurationException(string parameter, string value)
             : base("error in configuration: parameter " + parameter + " is not valid. (value: " + value +").")

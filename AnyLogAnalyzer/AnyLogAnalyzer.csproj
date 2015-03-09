@@ -71,6 +71,7 @@
     <Compile Include="CliReturnCodes.cs" />
     <Compile Include="CliArguments.cs" />
     <Compile Include="CommandLineInterface.cs" />
+    <Compile Include="ConfigParameterProvider.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
